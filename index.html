@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Квест для Вики ✨</title>
+  <meta name="theme-color" content="#ff79b0" />
+  <style>
+    :root{
+      --pink:#ff5fa2; --hot:#e93f86; --rose:#fff0f7; --cream:#fffafc;
+      --purple:#8b5cf6; --ink:#52233e; --muted:#8d6176; --gold:#ffd166;
+      --shadow:0 25px 70px rgba(201,50,115,.18);
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0; color:var(--ink); font-family:Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:radial-gradient(circle at 10% 10%,#ffd8eb 0 8%,transparent 25%),radial-gradient(circle at 90% 0%,#e8d8ff 0 8%,transparent 24%),linear-gradient(135deg,#fff7fb,#ffe8f2 48%,#f7efff);
+      min-height:100vh; overflow-x:hidden;
+    }
+    body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.22;background-image:radial-gradient(#fff 1px,transparent 1px);background-size:18px 18px;mix-blend-mode:soft-light}
+    .sparkles{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}.sparkles i{position:absolute;color:#fff;animation:float 5s infinite ease-in-out;opacity:.8}.sparkles i:nth-child(1){left:8%;top:18%;font-size:24px}.sparkles i:nth-child(2){right:12%;top:25%;font-size:18px;animation-delay:1s}.sparkles i:nth-child(3){left:20%;bottom:15%;font-size:16px;animation-delay:2s}.sparkles i:nth-child(4){right:25%;bottom:22%;font-size:28px;animation-delay:3s}@keyframes float{50%{transform:translateY(-20px) rotate(12deg);opacity:.35}}
+    .wrap{position:relative;z-index:1;width:min(1080px,92vw);margin:auto;padding:30px 0 70px}
+    .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;color:var(--muted);font-weight:800;letter-spacing:.04em}.brand{color:var(--hot);font-size:14px}.progress{font-size:13px}
+    .screen{display:none;animation:appear .55s ease both}.screen.active{display:block}@keyframes appear{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+    .card{background:rgba(255,255,255,.82);border:1px solid rgba(255,255,255,.9);box-shadow:var(--shadow);border-radius:32px;backdrop-filter:blur(18px)}
+    .hero{min-height:690px;display:grid;grid-template-columns:1.05fr .95fr;overflow:hidden}.hero-copy{padding:60px 48px;display:flex;flex-direction:column;justify-content:center}.eyebrow{font-size:13px;text-transform:uppercase;letter-spacing:.18em;color:var(--hot);font-weight:900}.hero h1{font-family:Georgia,serif;font-size:clamp(44px,6.5vw,80px);line-height:.96;margin:18px 0;color:#8d2858}.hero h1 span{color:var(--pink)}.hero p{font-size:17px;line-height:1.65;color:var(--muted);max-width:520px}.hero-art{position:relative;min-height:440px;background:linear-gradient(145deg,#ffc5df,#e2c8ff);display:grid;place-items:center;overflow:hidden;padding:24px}.hero-art:after{content:"✦";position:absolute;font-size:250px;color:rgba(255,255,255,.3);transform:rotate(14deg);pointer-events:none}
+    
+    .hero-photo{position:relative;z-index:2;width:82%;max-width:360px;aspect-ratio:3/4;border-radius:28px;border:4px solid rgba(255,255,255,.95);box-shadow:0 20px 45px rgba(184,45,109,.25);object-fit:cover;object-position:center top;animation:subtleFloat 6s ease-in-out infinite alternate}
+    @keyframes subtleFloat{0%{transform:translateY(0) scale(1)}100%{transform:translateY(-10px) scale(1.02)}}
+
+    .btn{border:0;cursor:pointer;padding:16px 25px;border-radius:999px;color:white;font-weight:900;font-size:16px;background:linear-gradient(135deg,var(--pink),var(--purple));box-shadow:0 12px 25px #e84b9670;transition:.25s;display:inline-flex;align-items:center;justify-content:center;gap:10px}.btn:hover{transform:translateY(-3px);filter:saturate(1.12)}.btn.secondary{background:white;color:var(--hot);border:1px solid #ffc2dc;box-shadow:none}.hero .btn{width:max-content;margin-top:18px}
+    .section-head{text-align:center;margin:40px 0 22px}.section-head h2{font-family:Georgia,serif;font-size:42px;margin:0;color:#8d2858}.section-head p{color:var(--muted)}
+    
+    .gifts{display:grid;grid-template-columns:repeat(2,1fr);gap:24px}.gift{padding:30px;position:relative;overflow:hidden}.gift:before{content:"";position:absolute;width:180px;height:180px;border-radius:50%;background:#ffd8e9;right:-60px;top:-70px}.gift>*{position:relative}.gift-icon{font-size:52px}.gift h3{font-family:Georgia,serif;font-size:28px;margin:12px 0 8px}.gift p{color:var(--muted);line-height:1.55}.locked{opacity:.85}.lock{display:inline-block;padding:6px 12px;border-radius:99px;background:#f0e9ff;color:#8054ce;font-size:12px;font-weight:900;margin-bottom:10px}.gift .btn{margin-top:15px}
+    
+    .gift-photo-box{margin:16px 0;width:100%;height:220px;border-radius:20px;overflow:hidden;border:2px solid rgba(255,255,255,.9);box-shadow:0 10px 25px rgba(0,0,0,.08);background:#f5f0f3;display:flex;align-items:center;justify-content:center}
+    .gift-photo-box img{width:100%;height:100%;object-fit:cover;transition:transform .4s}
+    .gift-photo-box:hover img{transform:scale(1.05)}
+
+    /* Игровая арена */
+    .gamebox{padding:30px}.game-head{display:flex;justify-content:space-between;align-items:center;gap:15px;flex-wrap:wrap}.game-head h2{font-family:Georgia,serif;font-size:32px;margin:0}.score{font-weight:900;color:var(--hot);background:#fff0f7;padding:11px 16px;border-radius:99px}.game-instructions{color:var(--muted);line-height:1.6;margin:10px 0 16px}
+    
+    .arena{position:relative;height:380px;border-radius:26px;overflow:hidden;background:linear-gradient(145deg,#ffd8e9,#e8ddff);border:3px solid white;box-shadow:inset 0 0 30px rgba(233,63,134,.12);user-select:none;touch-action:none}
+    
+    /* Вика как персонаж/NPC в игре */
+    .vika-character{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;pointer-events:none;z-index:5;transition:left .2s cubic-bezier(0.2,0.8,0.2,1)}
+    .speech-bubble{background:white;color:#8d2858;padding:8px 16px;border-radius:18px;font-size:13px;font-weight:800;box-shadow:0 8px 20px rgba(0,0,0,.1);margin-bottom:8px;position:relative;white-space:nowrap;animation:bubbleBounce 2s infinite ease-in-out}
+    .speech-bubble:after{content:"";position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);border-width:6px 6px 0;border-style:solid;border-color:white transparent}
+    @keyframes bubbleBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+    
+    .vika-avatar-circle{width:90px;height:90px;border-radius:50%;border:4px solid #fff;box-shadow:0 10px 25px rgba(233,63,134,.35);overflow:hidden;background:#ffe5f0}
+    .vika-avatar-circle img{width:100%;height:100%;object-fit:cover;object-position:center top}
+
+    .heart{position:absolute;border:0;background:transparent;cursor:pointer;font-size:36px;filter:drop-shadow(0 6px 8px rgba(184,45,109,.3));animation:floatDown linear;transition:transform .12s}
+    .heart:active{transform:scale(0.85)}
+    @keyframes floatDown{0%{top:-50px;opacity:0}15%{opacity:1}90%{opacity:1}100%{top:390px;opacity:0}}
+    
+    .timer{margin:14px 0;font-weight:900;color:#8d2858;display:flex;align-items:center;gap:8px}
+    .win{display:none;text-align:center;padding:26px;background:linear-gradient(135deg,#fff1a8,#ffd0e7);border-radius:24px;margin-top:20px;border:2px solid #fff}
+    .win.show{display:block;animation:appear .5s}
+    .money{font-size:50px;font-weight:1000;color:#b56a00;text-shadow:0 2px 10px rgba(255,209,102,.5)}
+    .win h3{font-family:Georgia,serif;font-size:32px;margin:8px 0;color:#8d2858}
+    
+    .note{padding:40px 30px;text-align:center}.note .big{font-size:65px}.note h2{font-family:Georgia,serif;font-size:38px;color:#8d2858}.note p{font-size:18px;line-height:1.7;color:var(--muted);max-width:650px;margin:15px auto}.signature{font-family:cursive;font-size:32px;color:var(--hot)}
+    .footer{text-align:center;color:#a67a90;font-size:13px;margin-top:28px}
+    @media(max-width:760px){.hero{grid-template-columns:1fr}.hero-copy{padding:38px 24px}.hero-art{min-height:340px}.gifts{grid-template-columns:1fr}.hero h1{font-size:54px}.gamebox{padding:20px}.arena{height:340px}}
+  </style>
+</head>
+<body>
+  <div class="sparkles"><i>✦</i><i>✧</i><i>♡</i><i>✦</i></div>
+  <main class="wrap">
+    <div class="topbar"><div class="brand">✦ VIKA'S MAGICAL QUEST</div><div class="progress" id="progress">Глава 1 из 3</div></div>
+
+    <!-- 1. Главный экран (1-я фотка на фоне/в главном блоке) -->
+    <section class="screen active" id="welcome">
+      <div class="hero card">
+        <div class="hero-copy">
+          <div class="eyebrow">Сегодня особенный день ✨</div>
+          <h1>С днём<br><span>рождения, Вика!</span></h1>
+          <p>Для самой прекрасной именинницы приготовлен маленький праздничный квест. Здесь тебя ждут улыбки, сюрпризы и мини-игра, где ты сама станешь главным героем! Готова открыть подарки?</p>
+          <button class="btn" onclick="showScreen('gifts')">Начать квест <span>→</span></button>
+        </div>
+        <div class="hero-art">
+          <img class="hero-photo" src="https://unlimbot.hb.ru-msk.vkcloud-storage.ru/uploads/82aa61c8439947b18b9bce2868e365b65583bfe7d728ae76.jpg" alt="Вика на фоне ёлочек" />
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. Экран выбора подарков (2-я фотка с кофтой) -->
+    <section class="screen" id="gifts">
+      <div class="section-head">
+        <div class="eyebrow">Комната сюрпризов</div>
+        <h2>Твои подарки</h2>
+        <p>Пройди мини-игру с Викой, чтобы разблокировать оба сюрприза! ✨</p>
+      </div>
+      <div class="gifts">
+        <article class="gift card">
+          <div class="gift-icon">💰</div>
+          <h3>Подарок №1</h3>
+          <p>Интерактивная мини-игра «Сердечки для Вики»! Лови сердечки вместе со своим персонажем и забери символический приз — <b>1000$ в квесте</b> 💸</p>
+          <button class="btn" onclick="showScreen('game')">Играть и открыть →</button>
+        </article>
+
+        <article class="gift card locked" id="hoodie-card">
+          <span class="lock" id="hoodie-lock-badge">🔒 Откроется после победы в игре</span>
+          <div class="gift-icon">🎀</div>
+          <h3>Подарок №2</h3>
+          <p>Та самая серая оверсайз кофта с капюшоном <b>MCLLCTN</b>! Она уже выбрана, заказана и летит к тебе на всех парах 💗</p>
+          
+          <div class="gift-photo-box">
+            <img src="https://unlimbot-03.hb.ru-msk.vkcloud-storage.ru/uploads/e6823918676547a7b795d51538a40cdba2c32622527da2f0.jpg" alt="Кофта MCLLCTN" />
+          </div>
+
+          <p style="font-size:13px; color:#9c6f85;"><i>Статус: в пути, скоро будет согревать тебя этой весной!</i></p>
+          <button class="btn secondary" id="hoodie-btn" disabled>Сначала пройди игру ✨</button>
+        </article>
+      </div>
+    </section>
+
+    <!-- 3. Мини-игра (3-я фотка как живой персонаж) -->
+    <section class="screen" id="game">
+      <div class="section-head">
+        <div class="eyebrow">Интерактив</div>
+        <h2>Помоги Вике собрать любовь!</h2>
+        <p>Кликай по падающим сердечкам и собирай их. Вика бежит прямо к твоим кликам! 💖</p>
+      </div>
+      <div class="gamebox card">
+        <div class="game-head">
+          <h2>♡ Сердечная охота с Викой</h2>
+          <div class="score">Собрано любви: <span id="caught">0</span> / 10</div>
+        </div>
+        <div class="timer">⏱️ Осталось времени: <span id="time">30</span> сек.</div>
+        
+        <div class="arena" id="arena">
+          <!-- NPC / Персонаж Вики -->
+          <div class="vika-character" id="vika-npc">
+            <div class="speech-bubble" id="vika-bubble">Поймай мне сердечко! 🫶</div>
+            <div class="vika-avatar-circle">
+              <img src="https://unlimbot-02.hb.ru-msk.vkcloud-storage.ru/uploads/1c1f3a08e0ef470a9084835a8211a47754b0c94de89959a3.jpg" alt="Вика с сердечком" />
+            </div>
+          </div>
+        </div>
+
+        <div class="win" id="win">
+          <div class="money">$1000</div>
+          <h3>Ура! Квест пройден! 👑✨</h3>
+          <p>Вика собрала всю любовь! Подарок №1 получен, а кофта разблокирована!</p>
+          <button class="btn" onclick="showScreen('final')">Забрать все подарки 🎀 →</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. Финал -->
+    <section class="screen" id="final">
+      <div class="note card">
+        <div class="big">👑💗✨</div>
+        <div class="eyebrow">Поздравление</div>
+        <h2>Все подарки разблокированы!</h2>
+        
+        <p><b>💸 Подарок №1:</b> 1000$ на виртуальный баланс супер-именинницы за ловкость и победу в игре!</p>
+        
+        <div style="max-width:280px; margin:16px auto; border-radius:20px; overflow:hidden; border:3px solid #fff; box-shadow:0 10px 25px rgba(0,0,0,.1);">
+          <img src="https://unlimbot-03.hb.ru-msk.vkcloud-storage.ru/uploads/e6823918676547a7b795d51538a40cdba2c32622527da2f0.jpg" style="width:100%; display:block;" alt="Кофта" />
+        </div>
+        
+        <p><b>🎀 Подарок №2:</b> Серая кофта MCLLCTN уже мчит к тебе! Совсем скоро она приедет и будет радовать тебя каждый день.</p>
+        <p>Оставайся всегда такой же яркой, милой и счастливой. Пусть каждый день приносит только приятные поводы для улыбки!</p>
+        <div class="signature">С днём рождения, принцесса! 💕</div>
+        <br><br>
+        <button class="btn secondary" onclick="showScreen('welcome')">Начать сначала ↺</button>
+      </div>
+    </section>
+
+    <div class="footer">Создано с теплом и любовью специально для Вики · Happy Birthday ✦</div>
+  </main>
+
+<script>
+  const screens = ['welcome','gifts','game','final'];
+  function showScreen(id){
+    screens.forEach(x => document.getElementById(x).classList.toggle('active', x === id));
+    const labels = {welcome:'Глава 1 из 3', gifts:'Глава 2 из 3', game:'Мини-игра', final:'Финал ✨'};
+    document.getElementById('progress').textContent = labels[id] || '';
+    window.scrollTo({top:0, behavior:'smooth'});
+    if(id === 'game') startGame();
+  }
+
+  // Логика игры
+  let started = false, count = 0, left = 30, timer, spawnInterval;
+  const quotes = [
+    'Спасибо за сердечко! 🥰',
+    'Ура, ещё одно! 💖',
+    'Лови-лови! ✨',
+    'Какая ты быстрая! ⚡',
+    'Почти все собрали! 🎀',
+    'Я знала, что ты победишь! 👑'
+  ];
+
+  function startGame(){
+    if(started) return; 
+    started = true;
+    count = 0; left = 30;
+    document.getElementById('caught').textContent = '0';
+    document.getElementById('time').textContent = '30';
+    document.getElementById('win').classList.remove('show');
+    
+    const arena = document.getElementById('arena');
+    const npc = document.getElementById('vika-npc');
+    const bubble = document.getElementById('vika-bubble');
+
+    function spawnHeart(){
+      if(count >= 10 || left <= 0) return;
+      const h = document.createElement('button');
+      h.className = 'heart';
+      h.textContent = ['💗','💖','💞','💘','✨'][Math.floor(Math.random()*5)];
+      const startX = 6 + Math.random() * 84;
+      h.style.left = startX + '%';
+      const dur = 2.2 + Math.random() * 1.5;
+      h.style.animationDuration = dur + 's';
+
+      h.onclick = (e) => {
+        e.stopPropagation();
+        count++;
+        document.getElementById('caught').textContent = count;
+        
+        // Интерактив: Вика перемещается к месту пойманного сердечка и комментирует
+        npc.style.left = startX + '%';
+        bubble.textContent = quotes[Math.floor(Math.random() * quotes.length)];
+        
+        // Всплывающий эффект +1
+        const plus = document.createElement('span');
+        plus.textContent = '+1 ❤️';
+        plus.style.position = 'absolute';
+        plus.style.left = h.style.left;
+        plus.style.top = h.offsetTop + 'px';
+        plus.style.color = '#e93f86';
+        plus.style.fontWeight = '900';
+        plus.style.transition = 'all .6s ease';
+        arena.appendChild(plus);
+        setTimeout(() => { plus.style.transform = 'translateY(-30px)'; plus.style.opacity = '0'; }, 20);
+        setTimeout(() => plus.remove(), 650);
+
+        h.remove();
+
+        if(count >= 10){
+          clearInterval(timer);
+          clearInterval(spawnInterval);
+          bubble.textContent = 'Ура-а-а! Мы победили! 👑🎉';
+          document.getElementById('win').classList.add('show');
+          
+          // Разблокируем кофту
+          const lockBadge = document.getElementById('hoodie-lock-badge');
+          if(lockBadge){
+            lockBadge.textContent = '✨ Разблокировано!';
+            lockBadge.style.background = '#e7fbf0';
+            lockBadge.style.color = '#0e9f6e';
+          }
+          const hoodieBtn = document.getElementById('hoodie-btn');
+          if(hoodieBtn){
+            hoodieBtn.disabled = false;
+            hoodieBtn.textContent = 'Подарок готов!';
+            hoodieBtn.onclick = () => showScreen('final');
+          }
+        }
+      };
+
+      arena.appendChild(h);
+      setTimeout(() => { if(h.parentElement) h.remove(); }, dur * 1000);
+    }
+
+    // Регулярный спавн сердечек
+    spawnInterval = setInterval(spawnHeart, 700);
+
+    // Таймер
+    timer = setInterval(() => {
+      left--;
+      document.getElementById('time').textContent = left;
+      if(left <= 0){
+        clearInterval(timer);
+        clearInterval(spawnInterval);
+        if(count < 10){
+          bubble.textContent = 'Ой, время вышло! Давай ещё раз? 🥺';
+          alert('Время вышло! Нажми ОК, чтобы попробовать ещё раз 💕');
+          started = false;
+          startGame();
+        }
+      }
+    }, 1000);
+  }
+</script>
+</body>
+</html>
